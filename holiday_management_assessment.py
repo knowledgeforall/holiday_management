@@ -2,7 +2,8 @@ import datetime
 import json
 from bs4 import BeautifulSoup
 import requests
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import date
 
 def mainMenu():
     holidayCount = 0
@@ -20,6 +21,49 @@ def mainMenu():
     print("5. Exit")
 
     mainMenuSelect = (input("Enter your selection: "))
+    if mainMenuSelect == 1:
+        addAHoliday()
+    elif mainMenuSelect == 2:
+        removeAHoliday()
+    elif mainMenuSelect == 3:
+        saveHolidayList()
+    elif mainMenuSelect == 4:
+        viewHolidays
+    elif mainMenuSelect == 5:
+        exit()
+
+def addAHoliday():
+    print("Add A Holiday")
+    print("==================")
+    holidayInput = str(input("Please enter the holiday name you would like to add: "))
+    dateInput = date(input("Please input the date you would like to add with format MM/DD/YY: "))
+    
+def removeAHoliday():
+    print("Remove A Holiday")
+    print("==================")
+    removeHoliday = str(input("Please enter the name of the holiday you would like to remove: "))
+    
+def saveHolidayList():
+    print("Saving Holiday List")
+    print("==================")
+    saveHoliday = str(input("Are you sure you want to save your changes? [y/n] "))
+    if saveHoliday == "y":
+        
+    
+def viewHolidays():
+    print("View Holidays")
+    print("==================")
+    whichYear = str(input("Which year?"))
+    whichWeek = str(input("Which week?"))
+    
+def exit():
+    exit = str(input("Are you sure you want to exit? [y/n]"))
+    # if 
+    # if exit == "y":
+    #     print("Goodbye!")
+    #     quit()
+    # elif exit == "n":
+        
 
     # if mainMenuSelect == "1":
     #     # HolidayList.addHoliday()
@@ -38,10 +82,6 @@ def mainMenu():
 # 2. You may need to add additional functions
 # 3. You may drop the init if you are using @dataclasses
 # --------------------------------------------
-holiday1 = Holiday('xmas', 12)
-
-from dataclasses import dataclass, field
-from datetime import date
 
 @dataclass
 class Holiday:
