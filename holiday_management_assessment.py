@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from dataclasses import dataclass
 
-def mainMenu()
+def mainMenu():
     holidayCount = 0
 
     print("Holiday Management")
@@ -21,16 +21,16 @@ def mainMenu()
 
     mainMenuSelect = (input("Enter your selection: "))
 
-    if mainMenuSelect == "1":
-        # HolidayList.addHoliday()
-    elif mainMenuSelect == "2":
-        # HolidayList.removeHoliday()
-    elif mainMenuSelect == "3":
-        # HolidayList.save_to_json()
-    elif mainMenuSelect == "4":
-        # do something else
-    elif (or else?) mainMenuSelect == "5":
-        # do something else
+    # if mainMenuSelect == "1":
+    #     # HolidayList.addHoliday()
+    # elif mainMenuSelect == "2":
+    #     # HolidayList.removeHoliday()
+    # elif mainMenuSelect == "3":
+    #     # HolidayList.save_to_json()
+    # elif mainMenuSelect == "4":
+    #     # do something else
+    # elif (or else?) mainMenuSelect == "5":
+    #     # do something else
           
 # -------------------------------------------
 # Modify the holiday class to 
@@ -38,14 +38,44 @@ def mainMenu()
 # 2. You may need to add additional functions
 # 3. You may drop the init if you are using @dataclasses
 # --------------------------------------------
+holiday1 = Holiday('xmas', 12)
+
+from dataclasses import dataclass, field
+from datetime import date
+
+@dataclass
 class Holiday:
-      
-    def __init__(self,name, date):
-        #Your Code Here        
+    name: str
+    date: date
     
-    def __str__ (self):
-        # String output
-        # Holiday output when printed.
+# class Holiday:
+      
+#     def __init__(self,name, date):
+#         """Holiday class"""
+#         self._name = name
+#         self._date = date
+        
+#     # @property
+#     # def name(self):
+#     #     return self._name
+    
+#     # @property
+#     # def date(self):
+#     # return self._date
+
+#     # @name.setter
+#     # def name(self, new_name):
+#     #     self.__name = new_name
+        
+#     # @date.setter
+#     # def date(self, new_date):
+#     #     self.__date = new_date
+    
+#     def __str__ (self):
+#         # String output
+#         return self._name
+#         return self._date
+#         # Holiday output when printed.
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
