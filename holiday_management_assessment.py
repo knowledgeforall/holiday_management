@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from dataclasses import dataclass, field
 from datetime import date
+import csv
 
 def mainMenu():
     holidayCount = 0
@@ -33,11 +34,17 @@ def mainMenu():
         exit()
 
 def addAHoliday():
+    global holidayInput
+    global dateInput
+    
     print("")
     print("Add A Holiday")
     print("==================")
+    
     holidayInput = str(input("Please enter the holiday name you would like to add: "))
     dateInput = date(input("Please input the date you would like to add with format MM/DD/YY: "))
+    
+    addHoliday(holidayObj)
     
 def removeAHoliday():
     print("")
@@ -67,18 +74,6 @@ def exit():
     #     print("Goodbye!")
     #     quit()
     # elif exit == "n":
-        
-
-    # if mainMenuSelect == "1":
-    #     # HolidayList.addHoliday()
-    # elif mainMenuSelect == "2":
-    #     # HolidayList.removeHoliday()
-    # elif mainMenuSelect == "3":
-    #     # HolidayList.save_to_json()
-    # elif mainMenuSelect == "4":
-    #     # do something else
-    # elif (or else?) mainMenuSelect == "5":
-    #     # do something else
           
 # -------------------------------------------
 # Modify the holiday class to 
@@ -92,34 +87,7 @@ class Holiday:
     name: str
     date: date
     
-# class Holiday:
-      
-#     def __init__(self,name, date):
-#         """Holiday class"""
-#         self._name = name
-#         self._date = date
-        
-#     # @property
-#     # def name(self):
-#     #     return self._name
-    
-#     # @property
-#     # def date(self):
-#     # return self._date
 
-#     # @name.setter
-#     # def name(self, new_name):
-#     #     self.__name = new_name
-        
-#     # @date.setter
-#     # def date(self, new_date):
-#     #     self.__date = new_date
-    
-#     def __str__ (self):
-#         # String output
-#         return self._name
-#         return self._date
-#         # Holiday output when printed.
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
@@ -131,10 +99,21 @@ class HolidayList:
        self.innerHolidays = []
    
     def addHoliday(holidayObj):
+        global holidayInput
+        global dateInput
+        
         print("addHoliday() method will run here")
         # Make sure holidayObj is an Holiday Object by checking the type
         # Use innerHolidays.append(holidayObj) to add holiday
+        with open("Holidays.csv","r",newline='',encoding="utf-8-sig") as csvfile:
+            holiday_reader=csv.DictReader(csvfile)
+            for row in holiday_reader:
+                holiday = Holiday(row['name'], row['date'])
+                innerHolidays.append(holiday)
+                
         # print to the user that you added a holiday
+        print("Success:")
+        print("{} ({}) has been added to the holiday list".format(holidayInput, dateInput))
 
     def findHoliday(HolidayName, Date):
         print("findHoliday() method will run here")
