@@ -118,25 +118,36 @@ rawhtml = response.text
 #parse the HTML
 soup = BeautifulSoup(rawhtml, 'html.parser')
 
-tablerow = soup.find_all('tr',attrs = {'data-mask':'1'})
-for row in tablerow:
-    anchorlink = row.find('a')
-    name = anchorlink.text
-    print(name)
-    thtag = row.find('th')
-    date = "2022 " + thtag.text
-    datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-    print(datestrp)
+for i in range(2021,2024):
+    url = 'https://www.timeanddate.com/holidays/us/{}?hol=33554809'
+    url = url.format(i)
+    year = i
     
-    holiday = Holiday(name, datestrp)
-    holidays.append(holiday)
+    tablerow = soup.find_all('tr',attrs = {'data-mask':'1'})
+    for row in tablerow:
+        anchorlink = row.find('a')
+        name = anchorlink.text
+        # print(name)
+        thtag = row.find('th')
+        date = str(year) + " " + thtag.text
+        datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+        # print(datestrp)
+
+        holiday = Holiday(name, datestrp)
+        holidays.append(holiday)
     
     list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
+    # with open("holidaysScraped.json", 'w') as file:
+    #     json.dump(list_dictionary_holidays, file, default=str)
+    holidaykeys = list_dictionary_holidays[0].keys()
 
-with open("holidaysScraped.json", 'w') as file:
-    json.dump(list_dictionary_holidays, file, default=str)
+    with open("holidays.txt", 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=holidaykeys)
+        writer.writeheader()
+        for holidaydict in list_dictionary_holidays:
+            writer.writerow(holidaydict)
     
-print(list_dictionary_holidays)
+# print(list_dictionary_holidays)
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
