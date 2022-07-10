@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 import requests
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import datetime
 import csv
 
 def mainMenu():
@@ -35,16 +35,23 @@ def mainMenu():
 
 def addAHoliday():
     global holidayInput
-    global dateInput
+    global date
     
     print("")
     print("Add A Holiday")
     print("==================")
     
     holidayInput = str(input("Please enter the holiday name you would like to add: "))
-    dateInput = date(input("Please input the date you would like to add with format MM/DD/YY: "))
+    dateInput = str(input("Please input the date you would like to add with format YYYY-MM-DD: "))
+    date = datetime.strptime(dateInput,"%Y-%m-%d")
     
-    addHoliday(holidayObj)
+    holidayData = ['holidayInput', 'dateInput']
+    
+    with open('Holidays.csv', 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(holidayData)
+    
+    # addHoliday(holidayObj)
     
 def removeAHoliday():
     print("")
@@ -85,9 +92,15 @@ def exit():
 @dataclass
 class Holiday:
     name: str
-    date: date
+    date: datetime
     
-
+holidays = list()
+with open("Holidays.csv","r",newline='',encoding="utf-8-sig") as csvfile:
+    holiday_reader=csv.DictReader(csvfile)
+    for row in holiday_reader:
+        holiday = Holiday(row['name'], row['date'])
+        holidays.append(holiday)
+        
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
@@ -100,20 +113,15 @@ class HolidayList:
    
     def addHoliday(holidayObj):
         global holidayInput
-        global dateInput
+        global date
         
         print("addHoliday() method will run here")
         # Make sure holidayObj is an Holiday Object by checking the type
+        type(holidayObj)
         # Use innerHolidays.append(holidayObj) to add holiday
-        with open("Holidays.csv","r",newline='',encoding="utf-8-sig") as csvfile:
-            holiday_reader=csv.DictReader(csvfile)
-            for row in holiday_reader:
-                holiday = Holiday(row['name'], row['date'])
-                innerHolidays.append(holiday)
-                
         # print to the user that you added a holiday
         print("Success:")
-        print("{} ({}) has been added to the holiday list".format(holidayInput, dateInput))
+        print("{} ({}) has been added to the holiday list".format(holidayInput, date))
 
     def findHoliday(HolidayName, Date):
         print("findHoliday() method will run here")
