@@ -4,10 +4,11 @@ from bs4 import BeautifulSoup
 import requests
 from dataclasses import dataclass, field
 from datetime import datetime
+from datetime import date
 import csv
 
 def mainMenu():
-    holidayCount = 0
+    # holidayCount = 0
 
     print("Holiday Management")
     print("==================")
@@ -35,7 +36,7 @@ def mainMenu():
 
 def addAHoliday():
     global holidayInput
-    global date
+    global datestrptime
     
     print("")
     print("Add A Holiday")
@@ -43,21 +44,35 @@ def addAHoliday():
     
     holidayInput = str(input("Please enter the holiday name you would like to add: "))
     dateInput = str(input("Please input the date you would like to add with format YYYY-MM-DD: "))
-    date = datetime.strptime(dateInput,"%Y-%m-%d")
+    datestrptime = datetime.strptime(dateInput,"%Y-%m-%d")
     
-    holidayData = ['holidayInput', 'dateInput']
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+    except ValueError:
+        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
     
-    with open('Holidays.csv', 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(holidayData)
+    # holidayData = ['holidayInput', 'dateInput']
+    
+    # with open('Holidays.csv', 'w') as csvfile:
+    #     writer = csv.writer(csvfile)
+    #     writer.writerow(holidayData)
     
     # addHoliday(holidayObj)
     
 def removeAHoliday():
+    global holidayInput
+    global datestrptime
+    
     print("")
     print("Remove A Holiday")
     print("==================")
-    removeHoliday = str(input("Please enter the name of the holiday you would like to remove: "))
+    holidayInput = str(input("Please enter the name of the holiday you would like to remove: "))
+    dateInput = str(input("Please input the date you would like to remove with format YYYY-MM-DD: "))
+    datestrptime = datetime.strptime(dateInput,"%Y-%m-%d")
+    
+    
+    
+    HolidayList.removeHoliday(HolidayName, Date)
     
 def saveHolidayList():
     print("")
@@ -93,14 +108,35 @@ def exit():
 class Holiday:
     name: str
     date: datetime
-    
-holidays = list()
-with open("Holidays.csv","r",newline='',encoding="utf-8-sig") as csvfile:
-    holiday_reader=csv.DictReader(csvfile)
-    for row in holiday_reader:
-        holiday = Holiday(row['name'], row['date'])
-        holidays.append(holiday)
         
+#setup the soup
+url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
+print(url)
+
+response = requests.get(url)
+rawhtml = response.text
+#parse the HTML
+soup = BeautifulSoup(rawhtml, 'html.parser')
+
+tablerow = soup.find_all('tr',attrs = {'data-mask':'1'})
+for row in tablerow:
+    anchorlink = row.find('a')
+    name = anchorlink.text
+    print(name)
+    thtag = row.find('th')
+    date = "2022 " + thtag.text
+    datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+    print(datestrp)
+    
+    holiday = Holiday(name, datestrp)
+    holidays.append(holiday)
+    
+    list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
+
+with open("holidaysScraped.json", 'w') as file:
+    json.dump(list_dictionary_holidays, file, default=str)
+    
+print(list_dictionary_holidays)
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
@@ -113,7 +149,7 @@ class HolidayList:
    
     def addHoliday(holidayObj):
         global holidayInput
-        global date
+        global datestrptime
         
         print("addHoliday() method will run here")
         # Make sure holidayObj is an Holiday Object by checking the type
@@ -129,10 +165,15 @@ class HolidayList:
         # Return Holiday
 
     def removeHoliday(HolidayName, Date):
+        global holidayInput
+        global datestrptime
+        
         print("removeHoliday() method will run here")
         # Find Holiday in innerHolidays by searching the name and date combination.
         # remove the Holiday from innerHolidays
         # inform user you deleted the holiday
+        print("Success:")
+        print("{} has been removed from the holiday list.".format(holidayInput))
 
     def read_json(filelocation):
         print("read_json() method will run here")
@@ -142,6 +183,9 @@ class HolidayList:
     def save_to_json(filelocation):
         print("save_to_json() method will run here")
         # Write out json file to selected file.
+        
+        print("Success:")
+        print("Your changes have been saved.".format(holidayInput))
         
     def scrapeHolidays():
         print("scrapeHoliday() method will run here")
