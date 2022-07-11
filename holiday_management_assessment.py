@@ -1,4 +1,5 @@
 import datetime
+from imghdr import what
 import json
 from bs4 import BeautifulSoup
 import requests
@@ -7,7 +8,7 @@ from datetime import datetime
 from datetime import date
 import csv
 
-def mainMenu():
+def mainMenu(testHolidayList):
     holidayCount = 0
 
     print("Holiday Management")
@@ -24,7 +25,7 @@ def mainMenu():
 
     mainMenuSelect = int(input("Enter your selection: "))
     if mainMenuSelect == 1:
-        addAHoliday()
+        addAHoliday(testHolidayList)
     elif mainMenuSelect == 2:
         removeAHoliday()
     elif mainMenuSelect == 3:
@@ -34,9 +35,10 @@ def mainMenu():
     elif mainMenuSelect == 5:
         exit()
 
-def addAHoliday():
-    global holidayInput
-    global datestrptime
+def addAHoliday(testHolidayList):
+    # global holidayInput
+    # global datestrptime
+    # global holidayObj
     
     print("")
     print("Add A Holiday")
@@ -44,20 +46,27 @@ def addAHoliday():
     
     holidayInput = str(input("Please enter the holiday name you would like to add: "))
     dateInput = str(input("Please input the date you would like to add with format YYYY-MM-DD: "))
-    datestrptime = datetime.strptime(dateInput,"%Y-%m-%d")
+    dateStrpTime = datetime.strptime(dateInput,"%Y-%m-%d")
     
-    try:
-        datetime.datetime.strptime(date_text, '%Y-%m-%d')
-    except ValueError:
-        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+    #create and populate holidays list
+    # holidays = []
+    holiday = Holiday(holidayInput, dateStrpTime)
+    # holidays.append(holiday)
+    # print(holidays)
+    testHolidayList.addHoliday(holiday)
     
-    # holidayData = ['holidayInput', 'dateInput']
+    #convert to holidayObj
+    # list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
+    # holidayObj = list_dictionary_holidays[0]
+    # print(holidayObj)
+
+    # try:
+    #     datetime.strptime(dateStrpTime, '%Y-%m-%d')
+    # except ValueError:
+    #     raise ValueError("Incorrect data format, should be YYYY-MM-DD")
     
-    # with open('Holidays.csv', 'w') as csvfile:
-    #     writer = csv.writer(csvfile)
-    #     writer.writerow(holidayData)
     
-    # addHoliday(holidayObj)
+    # HolidayList.addHoliday()
     
 def removeAHoliday():
     global holidayInput
@@ -106,6 +115,13 @@ def exit():
 class Holiday:
     name: str
     date: datetime
+    
+    def __str__ (self):
+        # String output
+        date_format = '%Y-%m-%d'
+        date_str = datetime.strftime(self.date, date_format)
+        # Holiday output when printed.
+        return '%s (%s) ' % (self.name, date_str)
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
@@ -116,18 +132,21 @@ class HolidayList:
     def __init__(self):
        self.innerHolidays = []
    
-    def addHoliday(holidayObj):
-        global holidayInput
-        global datestrptime
+    def addHoliday(self, holidayObj):
+        # global holidayInput
+        # global datestrptime
         
-        print("addHoliday() method will run here")
         # Make sure holidayObj is an Holiday Object by checking the type
-        type(holidayObj)
+        if isinstance(holidayObj, Holiday):
         # Use innerHolidays.append(holidayObj) to add holiday
-        innerHolidays.append(holidayObj)
+            self.innerHolidays.append(holidayObj)
+
+            #check for and eliminate duplicates
+            self.innerHolidays = [i for n, i in enumerate(self.innerHolidays) if i not in self.innerHolidays[n + 1:]]
+        
         # print to the user that you added a holiday
         print("Success:")
-        print("{} ({}) has been added to the holiday list".format(holidayInput, date))
+        print("{} has been added to the holiday list".format(holidayObj))
 
     def findHoliday(HolidayName, Date):
         print("findHoliday() method will run here")
@@ -153,14 +172,17 @@ class HolidayList:
     def save_to_json(filelocation):
         print("save_to_json() method will run here")
         # Write out json file to selected file.
+        # with open('holidays.json') as file:
+        # innerHolidays = json.load(file)
+            
+        # innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
         
         print("Success:")
         print("Your changes have been saved.".format(holidayInput))
         
-    def scrapeHolidays():
+    def scrapeHolidays(self):
         holidays = []
         # Handle any exceptions.
-        global innerHolidays
         #setup the soup
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/
         url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
@@ -191,11 +213,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -204,11 +224,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -217,11 +235,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -230,11 +246,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -243,11 +257,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -256,11 +268,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -269,11 +279,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -282,11 +290,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -295,11 +301,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -308,11 +312,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -321,11 +323,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -334,11 +334,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -347,11 +345,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -360,11 +356,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -373,11 +367,9 @@ class HolidayList:
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
-                print(name)
                 thtag = row.find('th')
                 date = str(year) + " " + thtag.text
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-                print(datestrp)
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
@@ -387,23 +379,14 @@ class HolidayList:
                 json.dump(list_dictionary_holidays, file, default=str)
             
             with open('holidaysScraped.json') as file:
-                innerHolidays = json.load(file)
-            print(innerHolidays)
+                self.innerHolidays = json.load(file)
 
             #removes duplicates in innerHolidays
-            innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
-            print(innerHolidays)
+            self.innerHolidays = [i for n, i in enumerate(self.innerHolidays) if i not in self.innerHolidays[n + 1:]]
             
-            return innerHolidays
+            return self.innerHolidays
                 
-            # holidaykeys = list_dictionary_holidays[0].keys()
-
-            # with open("holidays.txt", 'w') as csvfile:
-            #     writer = csv.DictWriter(csvfile, fieldnames=holidaykeys)
-            #     writer.writeheader()
-            #     for holidaydict in list_dictionary_holidays:
-            #         writer.writerow(holidaydict)
-            
+        # holidaykeys = list_dictionary_holidays[0].keys()
         # print(list_dictionary_holidays)
 
     def numHolidays():
@@ -446,15 +429,16 @@ def main():
     # Large Pseudo Code steps
     # -------------------------------------
     # 1. Initialize HolidayList Object
+    testHolidayList = HolidayList()
     # 2. Load JSON file via HolidayList read_json function
     with open('holidays.json') as file:
-        innerHolidays = json.load(file)
+        testHolidayList.innerHolidays = json.load(file)
     # 3. Scrape additional holidays using your HolidayList scrapeHolidays function.
-    HolidayList.scrapeHolidays()
+    testHolidayList.scrapeHolidays()
     # 3. Create while loop for user to keep adding or working with the Calender
     
     # 4. Display User Menu (Print the menu)
-    mainMenu()
+    mainMenu(testHolidayList)
     # 5. Take user input for their action based on Menu and check the user input for errors
     # 6. Run appropriate method from the HolidayList object depending on what the user input is
     # 7. Ask the User if they would like to Continue, if not, end the while loop, ending the program.  If they do wish to continue, keep the program going. 
