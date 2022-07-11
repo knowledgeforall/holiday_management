@@ -158,15 +158,12 @@ class HolidayList:
         print("Your changes have been saved.".format(holidayInput))
         
     def scrapeHolidays():
-        print("scrapeHoliday() method will run here") 
-        # Check to see if name and date of holiday is in innerHolidays array
-        # Add non-duplicates to innerHolidays
+        holidays = []
         # Handle any exceptions.
-        
+        global innerHolidays
         #setup the soup
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/
         url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
-        print(url)
 
         response = requests.get(url)
         rawhtml = response.text
@@ -189,6 +186,201 @@ class HolidayList:
 
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
+                    
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'2'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'2048'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'8192'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'8388608'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'1024'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'4'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'32'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'32768'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'64'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'16'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'1048576'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'65536'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'8224'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'8256'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+                
+                tablerow = soup.find_all('tr',attrs = {'data-mask':'4098'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                print(name)
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+                print(datestrp)
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
             
             list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
             with open("holidaysScraped.json", 'w') as file:
@@ -196,9 +388,13 @@ class HolidayList:
             
             with open('holidaysScraped.json') as file:
                 innerHolidays = json.load(file)
+            print(innerHolidays)
 
             #removes duplicates in innerHolidays
             innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
+            print(innerHolidays)
+            
+            return innerHolidays
                 
             # holidaykeys = list_dictionary_holidays[0].keys()
 
@@ -250,12 +446,11 @@ def main():
     # Large Pseudo Code steps
     # -------------------------------------
     # 1. Initialize HolidayList Object
-    [HolidayListInit] = HolidayList()
     # 2. Load JSON file via HolidayList read_json function
     with open('holidays.json') as file:
         innerHolidays = json.load(file)
     # 3. Scrape additional holidays using your HolidayList scrapeHolidays function.
-    scrapeHolidays()
+    HolidayList.scrapeHolidays()
     # 3. Create while loop for user to keep adding or working with the Calender
     
     # 4. Display User Menu (Print the menu)
