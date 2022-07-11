@@ -8,7 +8,7 @@ from datetime import date
 import csv
 
 def mainMenu():
-    # holidayCount = 0
+    holidayCount = 0
 
     print("Holiday Management")
     print("==================")
@@ -70,8 +70,6 @@ def removeAHoliday():
     dateInput = str(input("Please input the date you would like to remove with format YYYY-MM-DD: "))
     datestrptime = datetime.strptime(dateInput,"%Y-%m-%d")
     
-    
-    
     HolidayList.removeHoliday(HolidayName, Date)
     
 def saveHolidayList():
@@ -108,46 +106,6 @@ def exit():
 class Holiday:
     name: str
     date: datetime
-        
-#setup the soup
-url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
-print(url)
-
-response = requests.get(url)
-rawhtml = response.text
-#parse the HTML
-soup = BeautifulSoup(rawhtml, 'html.parser')
-
-for i in range(2021,2024):
-    url = 'https://www.timeanddate.com/holidays/us/{}?hol=33554809'
-    url = url.format(i)
-    year = i
-    
-    tablerow = soup.find_all('tr',attrs = {'data-mask':'1'})
-    for row in tablerow:
-        anchorlink = row.find('a')
-        name = anchorlink.text
-        # print(name)
-        thtag = row.find('th')
-        date = str(year) + " " + thtag.text
-        datestrp = datetime.strptime(date, "%Y %b %d" ).date()
-        # print(datestrp)
-
-        holiday = Holiday(name, datestrp)
-        holidays.append(holiday)
-    
-    list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
-    # with open("holidaysScraped.json", 'w') as file:
-    #     json.dump(list_dictionary_holidays, file, default=str)
-    holidaykeys = list_dictionary_holidays[0].keys()
-
-    with open("holidays.txt", 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=holidaykeys)
-        writer.writeheader()
-        for holidaydict in list_dictionary_holidays:
-            writer.writerow(holidaydict)
-    
-# print(list_dictionary_holidays)
            
 # -------------------------------------------
 # The HolidayList class acts as a wrapper and container
@@ -166,6 +124,7 @@ class HolidayList:
         # Make sure holidayObj is an Holiday Object by checking the type
         type(holidayObj)
         # Use innerHolidays.append(holidayObj) to add holiday
+        innerHolidays.append(holidayObj)
         # print to the user that you added a holiday
         print("Success:")
         print("{} ({}) has been added to the holiday list".format(holidayInput, date))
@@ -199,12 +158,57 @@ class HolidayList:
         print("Your changes have been saved.".format(holidayInput))
         
     def scrapeHolidays():
-        print("scrapeHoliday() method will run here")
-        # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
-        # Remember, 2 previous years, current year, and 2  years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
+        print("scrapeHoliday() method will run here") 
         # Check to see if name and date of holiday is in innerHolidays array
         # Add non-duplicates to innerHolidays
-        # Handle any exceptions.     
+        # Handle any exceptions.
+        
+        #setup the soup
+        # Scrape Holidays from https://www.timeanddate.com/holidays/us/
+        url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
+        print(url)
+
+        response = requests.get(url)
+        rawhtml = response.text
+        #parse the HTML
+        soup = BeautifulSoup(rawhtml, 'html.parser')
+
+         # Remember, 2 previous years, current year, and 2 years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
+        for i in range(2020,2025):
+            url = 'https://www.timeanddate.com/holidays/us/{}?hol=33554809'
+            url = url.format(i)
+            year = i
+            
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'1'})
+            for row in tablerow:
+                anchorlink = row.find('a')
+                name = anchorlink.text
+                thtag = row.find('th')
+                date = str(year) + " " + thtag.text
+                datestrp = datetime.strptime(date, "%Y %b %d" ).date()
+
+                holiday = Holiday(name, datestrp)
+                holidays.append(holiday)
+            
+            list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
+            with open("holidaysScraped.json", 'w') as file:
+                json.dump(list_dictionary_holidays, file, default=str)
+            
+            with open('holidaysScraped.json') as file:
+                innerHolidays = json.load(file)
+
+            #removes duplicates in innerHolidays
+            innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
+                
+            # holidaykeys = list_dictionary_holidays[0].keys()
+
+            # with open("holidays.txt", 'w') as csvfile:
+            #     writer = csv.DictWriter(csvfile, fieldnames=holidaykeys)
+            #     writer.writeheader()
+            #     for holidaydict in list_dictionary_holidays:
+            #         writer.writerow(holidaydict)
+            
+        # print(list_dictionary_holidays)
 
     def numHolidays():
         print("numHoliday() method will run here")
@@ -246,9 +250,14 @@ def main():
     # Large Pseudo Code steps
     # -------------------------------------
     # 1. Initialize HolidayList Object
+    [HolidayListInit] = HolidayList()
     # 2. Load JSON file via HolidayList read_json function
+    with open('holidays.json') as file:
+        innerHolidays = json.load(file)
     # 3. Scrape additional holidays using your HolidayList scrapeHolidays function.
+    scrapeHolidays()
     # 3. Create while loop for user to keep adding or working with the Calender
+    
     # 4. Display User Menu (Print the menu)
     mainMenu()
     # 5. Take user input for their action based on Menu and check the user input for errors
