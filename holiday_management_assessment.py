@@ -7,9 +7,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from datetime import date
 import csv
+from config import filelocation
 
 def mainMenu(testHolidayList):
     holidayCount = 0
+    holidayCount = testHolidayList.numHolidays()
 
     print("Holiday Management")
     print("==================")
@@ -82,11 +84,35 @@ def saveHolidayList(testHolidayList):
             
         
 def viewHolidays(testHolidayList):
+    wrong_input = True
+    
     print("")
     print("View Holidays")
     print("==================")
-    whichYear = str(input("Which year?: "))
-    whichWeek = str(input("Which week? #[1-52, Leave blank for the current week]: "))
+    
+    
+    while(wrong_input):
+        year = int(input("Which year?: "))
+        week = str(input("Which week? #[1-52, Leave blank for the current week]: "))
+        print(type(week))
+        if week != "":
+            if(int(week) <= 52 and int(week) >= 1):
+                week = int(week)
+                print(week)
+                testHolidayList.displayHolidaysInWeek(year, week)
+                wrong_input = False
+            else:
+                print("Input outside of expected ranges, please try again: ")
+        elif week == "":
+            week = datetime.now().isocalendar()[1]
+            print(week)
+            week = int(week)
+            print(week)
+            testHolidayList.displayHolidaysInWeek(year, week)
+            wrong_input = False
+    # else:
+    mainMenu(testHolidayList)
+                
     
 def exit():
     print("")
@@ -124,12 +150,6 @@ class Holiday:
 class HolidayList:
     def __init__(self):
        self.innerHolidays = []
-       
-    def __contains__(self, anotherCircle):
-    
-        if anotherCircle in self:
-
-            return True
    
     def addHoliday(self, holidayObj):
         
@@ -142,23 +162,19 @@ class HolidayList:
             self.innerHolidays = [i for n, i in enumerate(self.innerHolidays) if i not in self.innerHolidays[n + 1:]]
         
         # print to the user that you added a holiday
-        print("Success:")
-        print("{} has been added to the holiday list".format(holidayObj))
+        # print("Success:")
+        # print("{} has been added to the holiday list".format(holidayObj))
 
     def findHoliday(HolidayName, Date):
         # Find Holiday in innerHolidays
         # Return Holiday
         self.innerHolidays.__contains__(Holiday(HolidayName,Date))
 
-            for x in self.innerHolidays:
-
-                if x.theHoliday == HolidayName and x.theDate == Date:
-
-                    found_holiday = x
-
-            print(found_holiday)
-
-            return(found_holiday)
+        for x in self.innerHolidays:
+            if x.theHoliday == HolidayName and x.theDate == Date:
+                found_holiday = x
+        print(found_holiday)
+        return(found_holiday)
 
     def removeHoliday(self, holidayObj):
 
@@ -172,16 +188,30 @@ class HolidayList:
         print("Success:")
         print("Holiday has been removed from the holiday list.")
 
-    def read_json(filelocation):
-        print("read_json() method will run here")
+    def read_json(self, filelocation):
+        with open(filelocation) as file:
+            holidayData = json.load(file)
+            file.close()
+            
+        for holiday in holidayData["holidays"]:
+            holiday_name = holiday["name"]
+            holiday_date = holiday["date"]
+            date = datetime.strptime(holiday_date, "%Y-%m-%d" ).date()
+            holidayObj = Holiday(holiday_name, date)
+            self.addHoliday(holidayObj)
+
+        #removes duplicates in innerHolidays
+        self.innerHolidays = [i for n, i in enumerate(self.innerHolidays) if i not in self.innerHolidays[n + 1:]]
+        
+        return self.innerHolidays
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
 
-    def save_to_json(self):
+    def save_to_json(self, filelocation):
         # Write out json file to selected file.
-        self.innerHolidays = json.dumps(self.innerHolidays, indent = 4)
-        with open("holidaysSaved.json", 'w') as outfile:
-            outfile.write(self.innerHolidays)
+        jsonHolidays = json.dump(self.innerHolidays, indent = 4)
+        with open(filelocation, 'w') as outfile:
+            outfile.write(jsonHolidays)
         
         print("Success:")
         print("Your changes have been saved.")
@@ -199,7 +229,7 @@ class HolidayList:
         soup = BeautifulSoup(rawhtml, 'html.parser')
 
          # Remember, 2 previous years, current year, and 2 years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
-        for i in range(2020,2025):
+        for i in range(2021,2022):#(2020,2025):
             url = 'https://www.timeanddate.com/holidays/us/{}?hol=33554809'
             url = url.format(i)
             year = i
@@ -213,7 +243,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                     
             tablerow = soup.find_all('tr',attrs = {'data-mask':'2'})
             for row in tablerow:
@@ -224,7 +254,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'2048'})
             for row in tablerow:
@@ -235,7 +265,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'8192'})
             for row in tablerow:
@@ -246,7 +276,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
             tablerow = soup.find_all('tr',attrs = {'data-mask':'8388608'})
             for row in tablerow:
@@ -257,7 +287,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
             tablerow = soup.find_all('tr',attrs = {'data-mask':'1024'})
             for row in tablerow:
@@ -268,7 +298,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
             tablerow = soup.find_all('tr',attrs = {'data-mask':'4'})
             for row in tablerow:
@@ -279,7 +309,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
             tablerow = soup.find_all('tr',attrs = {'data-mask':'32'})
             for row in tablerow:
@@ -290,7 +320,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
             tablerow = soup.find_all('tr',attrs = {'data-mask':'32768'})
             for row in tablerow:
@@ -301,7 +331,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'64'})
             for row in tablerow:
@@ -312,7 +342,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'16'})
             for row in tablerow:
@@ -323,7 +353,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'1048576'})
             for row in tablerow:
@@ -334,7 +364,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'65536'})
             for row in tablerow:
@@ -345,7 +375,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'8224'})
             for row in tablerow:
@@ -356,7 +386,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'8256'})
             for row in tablerow:
@@ -367,7 +397,7 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
                 
             tablerow = soup.find_all('tr',attrs = {'data-mask':'4098'})
             for row in tablerow:
@@ -378,40 +408,49 @@ class HolidayList:
                 datestrp = datetime.strptime(date, "%Y %b %d" ).date()
 
                 holiday = Holiday(name, datestrp)
-                holidays.append(holiday)
+                self.addHoliday(holiday)
             
-            list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
-            with open("holidaysScraped.json", 'w') as file:
-                json.dump(list_dictionary_holidays, file, default=str)
+            # list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
+            # with open("holidaysScraped.json", 'w') as file:
+            #     json.dump(list_dictionary_holidays, file, default=str)
             
-            with open('holidaysScraped.json') as file:
-                self.innerHolidays = json.load(file)
-
-            #removes duplicates in innerHolidays
-            self.innerHolidays = [i for n, i in enumerate(self.innerHolidays) if i not in self.innerHolidays[n + 1:]]
-            
-            return self.innerHolidays
+            # self.read_json(filelocation)
                 
         # holidaykeys = list_dictionary_holidays[0].keys()
         # print(list_dictionary_holidays)
 
-    def numHolidays():
-        print("numHoliday() method will run here")
+    def numHolidays(self):
         # Return the total number of holidays in innerHolidays
         return len(self.innerHolidays)
     
-    def filter_holidays_by_week(year, week_number):
+    def filter_holidays_by_week(self, year, week):
         print("filter_holidays_by_week() method will run here")
         # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
         # Week number is part of the the Datetime object
         # Cast filter results as list
         # return your holidays
+        holidays = []
+        if(not (isinstance(week, int))):
+            raise ValueError()
+        
+        if(not (isinstance(year, int))):
+            raise ValueError()
+        
+        holidays = list(filter(lambda x : x.date.isocalendar()[0] == year and x.date.isocalendar()[1] == week, self.innerHolidays))
+        print(holidays)
+        return holidays
+        # self.displayHolidaysInWeek(year, week)
 
-    def displayHolidaysInWeek(holidayList):
-        print("displayHolidaysInWeek() method will run here")
+    def displayHolidaysInWeek(self, year, week):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
         # Output formated holidays in the week. 
         # * Remember to use the holiday __str__ method.
+        
+        print("These are the holidays for {} week {}".format(year, week))
+        
+        weekHolidays = self.filter_holidays_by_week(year, week)
+        for holidays in weekHolidays:
+            print(holidays)
 
     def getWeather(weekNum):
         print("getWeather() method will run here")
@@ -438,8 +477,7 @@ def main():
     # 1. Initialize HolidayList Object
     testHolidayList = HolidayList()
     # 2. Load JSON file via HolidayList read_json function
-    with open('holidays.json') as file:
-        testHolidayList.innerHolidays = json.load(file)
+    testHolidayList.read_json(filelocation)
     # 3. Scrape additional holidays using your HolidayList scrapeHolidays function.
     testHolidayList.scrapeHolidays()
     # 3. Create while loop for user to keep adding or working with the Calender
