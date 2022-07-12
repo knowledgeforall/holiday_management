@@ -27,18 +27,15 @@ def mainMenu(testHolidayList):
     if mainMenuSelect == 1:
         addAHoliday(testHolidayList)
     elif mainMenuSelect == 2:
-        removeAHoliday()
+        removeAHoliday(testHolidayList)
     elif mainMenuSelect == 3:
-        saveHolidayList()
+        saveHolidayList(testHolidayList)
     elif mainMenuSelect == 4:
-        viewHolidays()
+        viewHolidays(testHolidayList)
     elif mainMenuSelect == 5:
         exit()
 
 def addAHoliday(testHolidayList):
-    # global holidayInput
-    # global datestrptime
-    # global holidayObj
     
     print("")
     print("Add A Holiday")
@@ -49,46 +46,38 @@ def addAHoliday(testHolidayList):
     dateStrpTime = datetime.strptime(dateInput,"%Y-%m-%d")
     
     #create and populate holidays list
-    # holidays = []
     holiday = Holiday(holidayInput, dateStrpTime)
-    # holidays.append(holiday)
-    # print(holidays)
     testHolidayList.addHoliday(holiday)
-    
-    #convert to holidayObj
-    # list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
-    # holidayObj = list_dictionary_holidays[0]
-    # print(holidayObj)
 
     # try:
     #     datetime.strptime(dateStrpTime, '%Y-%m-%d')
     # except ValueError:
     #     raise ValueError("Incorrect data format, should be YYYY-MM-DD")
     
-    
-    # HolidayList.addHoliday()
-    
-def removeAHoliday():
-    global holidayInput
-    global datestrptime
+def removeAHoliday(testHolidayList):
     
     print("")
     print("Remove A Holiday")
     print("==================")
+    
     holidayInput = str(input("Please enter the name of the holiday you would like to remove: "))
     dateInput = str(input("Please input the date you would like to remove with format YYYY-MM-DD: "))
-    datestrptime = datetime.strptime(dateInput,"%Y-%m-%d")
+    dateStrpTime = datetime.strptime(dateInput,"%Y-%m-%d")
     
-    HolidayList.removeHoliday(HolidayName, Date)
+    holiday = Holiday(holidayInput, dateStrpTime)
     
-def saveHolidayList():
+    testHolidayList.removeHoliday(holiday)
+    
+def saveHolidayList(testHolidayList):
     print("")
     print("Saving Holiday List")
     print("==================")
     saveHoliday = str(input("Are you sure you want to save your changes? [y/n] "))
-    # if saveHoliday == "y":
+    if saveHoliday == "y":
+        HolidayList.save_to_json
+            
         
-def viewHolidays():
+def viewHolidays(testHolidayList):
     print("")
     print("View Holidays")
     print("==================")
@@ -133,8 +122,6 @@ class HolidayList:
        self.innerHolidays = []
    
     def addHoliday(self, holidayObj):
-        # global holidayInput
-        # global datestrptime
         
         # Make sure holidayObj is an Holiday Object by checking the type
         if isinstance(holidayObj, Holiday):
@@ -153,27 +140,27 @@ class HolidayList:
         # Find Holiday in innerHolidays
         # Return Holiday
 
-    def removeHoliday(HolidayName, Date):
-        global holidayInput
-        global datestrptime
-        
-        print("removeHoliday() method will run here")
+    def removeHoliday(self, holidayObj):
+
         # Find Holiday in innerHolidays by searching the name and date combination.
         # remove the Holiday from innerHolidays
+        for i, json in enumerate(self.innerHolidays):
+            if json == holidayObj:
+                self.innerHolidays.pop(i)
+                
         # inform user you deleted the holiday
         print("Success:")
-        print("{} has been removed from the holiday list.".format(holidayInput))
+        print("Holiday has been removed from the holiday list.")
 
     def read_json(filelocation):
         print("read_json() method will run here")
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
 
-    def save_to_json(filelocation):
-        print("save_to_json() method will run here")
+    def save_to_json(self):
         # Write out json file to selected file.
-        # with open('holidays.json') as file:
-        # innerHolidays = json.load(file)
+        with open("holidays.json", 'w') as outfile:
+            outfile.write(self.innerHolidays)
             
         # innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
         
@@ -220,7 +207,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'2048'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'2048'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -231,7 +218,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'8192'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'8192'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -242,7 +229,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
             
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'8388608'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'8388608'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -253,7 +240,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
             
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'1024'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'1024'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -264,7 +251,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
             
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'4'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'4'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -275,7 +262,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
             
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'32'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'32'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -286,7 +273,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
             
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'32768'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'32768'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -297,7 +284,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'64'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'64'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -308,7 +295,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'16'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'16'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -319,7 +306,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'1048576'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'1048576'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -330,7 +317,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'65536'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'65536'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -341,7 +328,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'8224'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'8224'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -352,7 +339,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'8256'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'8256'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
@@ -363,7 +350,7 @@ class HolidayList:
                 holiday = Holiday(name, datestrp)
                 holidays.append(holiday)
                 
-                tablerow = soup.find_all('tr',attrs = {'data-mask':'4098'})
+            tablerow = soup.find_all('tr',attrs = {'data-mask':'4098'})
             for row in tablerow:
                 anchorlink = row.find('a')
                 name = anchorlink.text
