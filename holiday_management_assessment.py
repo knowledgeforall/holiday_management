@@ -74,15 +74,19 @@ def saveHolidayList(testHolidayList):
     print("==================")
     saveHoliday = str(input("Are you sure you want to save your changes? [y/n] "))
     if saveHoliday == "y":
-        HolidayList.save_to_json
+        testHolidayList.save_to_json()
+    elif saveHoliday == "n":
+        print("Canceled:")
+        print("Holiday list file save canceled.")
+        mainMenu(testHolidayList)
             
         
 def viewHolidays(testHolidayList):
     print("")
     print("View Holidays")
     print("==================")
-    whichYear = str(input("Which year?"))
-    whichWeek = str(input("Which week?"))
+    whichYear = str(input("Which year?: "))
+    whichWeek = str(input("Which week? #[1-52, Leave blank for the current week]: "))
     
 def exit():
     print("")
@@ -120,6 +124,12 @@ class Holiday:
 class HolidayList:
     def __init__(self):
        self.innerHolidays = []
+       
+    def __contains__(self, anotherCircle):
+    
+        if anotherCircle in self:
+
+            return True
    
     def addHoliday(self, holidayObj):
         
@@ -136,9 +146,19 @@ class HolidayList:
         print("{} has been added to the holiday list".format(holidayObj))
 
     def findHoliday(HolidayName, Date):
-        print("findHoliday() method will run here")
         # Find Holiday in innerHolidays
         # Return Holiday
+        self.innerHolidays.__contains__(Holiday(HolidayName,Date))
+
+            for x in self.innerHolidays:
+
+                if x.theHoliday == HolidayName and x.theDate == Date:
+
+                    found_holiday = x
+
+            print(found_holiday)
+
+            return(found_holiday)
 
     def removeHoliday(self, holidayObj):
 
@@ -159,13 +179,12 @@ class HolidayList:
 
     def save_to_json(self):
         # Write out json file to selected file.
-        with open("holidays.json", 'w') as outfile:
+        self.innerHolidays = json.dumps(self.innerHolidays, indent = 4)
+        with open("holidaysSaved.json", 'w') as outfile:
             outfile.write(self.innerHolidays)
-            
-        # innerHolidays = [i for n, i in enumerate(innerHolidays) if i not in innerHolidays[n + 1:]]
         
         print("Success:")
-        print("Your changes have been saved.".format(holidayInput))
+        print("Your changes have been saved.")
         
     def scrapeHolidays(self):
         holidays = []
@@ -379,6 +398,7 @@ class HolidayList:
     def numHolidays():
         print("numHoliday() method will run here")
         # Return the total number of holidays in innerHolidays
+        return len(self.innerHolidays)
     
     def filter_holidays_by_week(year, week_number):
         print("filter_holidays_by_week() method will run here")
