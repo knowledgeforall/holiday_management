@@ -50,11 +50,6 @@ def addAHoliday(testHolidayList):
     #create and populate holidays list
     holiday = Holiday(holidayInput, dateStrpTime)
     testHolidayList.addHoliday(holiday)
-
-    # try:
-    #     datetime.strptime(dateStrpTime, '%Y-%m-%d')
-    # except ValueError:
-    #     raise ValueError("Incorrect data format, should be YYYY-MM-DD")
     
 def removeAHoliday(testHolidayList):
     
@@ -220,7 +215,6 @@ class HolidayList:
         holidays = []
         # Handle any exceptions.
         #setup the soup
-        # Scrape Holidays from https://www.timeanddate.com/holidays/us/
         url = 'https://www.timeanddate.com/holidays/us/2022?hol=33554809'
 
         response = requests.get(url)
@@ -229,7 +223,7 @@ class HolidayList:
         soup = BeautifulSoup(rawhtml, 'html.parser')
 
          # Remember, 2 previous years, current year, and 2 years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
-        for i in range(2021,2022):#(2020,2025):
+        for i in range(2020,2025):
             url = 'https://www.timeanddate.com/holidays/us/{}?hol=33554809'
             url = url.format(i)
             year = i
@@ -409,15 +403,6 @@ class HolidayList:
 
                 holiday = Holiday(name, datestrp)
                 self.addHoliday(holiday)
-            
-            # list_dictionary_holidays = [holidayObj.__dict__ for holidayObj in holidays]
-            # with open("holidaysScraped.json", 'w') as file:
-            #     json.dump(list_dictionary_holidays, file, default=str)
-            
-            # self.read_json(filelocation)
-                
-        # holidaykeys = list_dictionary_holidays[0].keys()
-        # print(list_dictionary_holidays)
 
     def numHolidays(self):
         # Return the total number of holidays in innerHolidays
@@ -460,7 +445,7 @@ class HolidayList:
         # Format weather information and return weather string.
 
     def viewCurrentWeek():
-        print("viewCurrentWeek() method will run here")
+        pass
         # Use the Datetime Module to look up current week and year
         # Use your filter_holidays_by_week function to get the list of holidays 
         # for the current week/year
